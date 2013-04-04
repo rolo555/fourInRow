@@ -132,6 +132,16 @@ class Node
     nil
   end
   
+  def makePlayMinMax
+    @value = Node.minMax(n, 4, Node::MAXPLAYER)
+    @childrens.each do |children|
+      if @value == children.value
+        return Node.new(children)        
+      end
+    end
+    nil
+  end
+  
   def Node.alphaBeta(node, depth, alpha, beta, player)
     if depth == 0 || node.isFinalState
       node.value = node.getHeuristicValue
@@ -155,8 +165,23 @@ class Node
       return beta
     end
   end
+  
+  def Node.minMax(node, depth, player)
+    if depth == 0 || node.isFinalState
+      node.value = node.getHeuristicValue
+      return node.value 
+    end
+    node.generateChildrens(player)
+    alpha = -99999999
+    node.childrens.each do |children|
+      alpha = [alpha, -1 * minMax(children, depth - 1, -1 * player)].max
+    end
+    return alpha
+  end
 end
 
 n = Node.new
 puts Node.alphaBeta(n, 7, -99999, 99999, Node::MAXPLAYER)
+n = Node.new
+puts Node.minMax(n, 7, Node::MAXPLAYER)
 #n.printTree 0
