@@ -17,7 +17,7 @@ end
 
 while (!node.isFinalState)
   puts "Ahora yo hago mi jugada, espera...."
-  node = node.makePlay
+  node = node.makePlay 8
   puts "Esta es mi jugada ;)"
   node.show_table
   

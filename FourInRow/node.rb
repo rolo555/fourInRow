@@ -131,8 +131,8 @@ class Node
     isDraw || maxPlayerWon || minPlayerWon
   end
   
-  def makePlay
-    @value = Node.alphaBeta(self, 9, -99999, 99999, Node::MAXPLAYER)
+  def makePlay(level)
+    @value = Node.alphaBeta(self, level, -99999, 99999, Node::MAXPLAYER)
     @childrens.each do |children|
       puts "Child Valor: #{children.value}"
     end
@@ -144,8 +144,8 @@ class Node
     nil
   end
   
-  def makePlayMinMax
-    @value = Node.minMax(self, 9, -99999, 99999, Node::MAXPLAYER)
+  def makePlayMinMax(level)
+    @value = Node.minMax(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Valor: #{@value}"
     @childrens.each do |children|
       puts "Child Valor: #{children.value}"
