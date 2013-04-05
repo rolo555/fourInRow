@@ -1,4 +1,8 @@
 require_relative 'heuristic'
+require_relative 'heuristic2'
+
+$cutnodes = 0
+$visitedstates = 0
 
 class Node
   attr :state
@@ -42,6 +46,18 @@ class Node
       return 10000
     else
       return heuristic(@state, MAXPLAYER) - heuristic(@state, MINPLAYER)
+    end
+  end
+  
+  def getHeuristicValue2    
+    if isDraw
+      return 0
+    elsif minPlayerWon
+      return -10000
+    elsif maxPlayerWon
+      return 10000
+    else
+      return heuristica(@state)
     end
   end
   
@@ -132,10 +148,11 @@ class Node
   end
   
   def makePlay(level)
+    $cutnodes = 0
+    $visitedstates = 0
     @value = Node.alphaBeta(self, level, -99999, 99999, Node::MAXPLAYER)
-    @childrens.each do |children|
-      puts "Child Valor: #{children.value}"
-    end
+    puts "Estados visitados: #{$visitedstates}"
+    puts "Podas: #{$cutnodes}"    
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -145,11 +162,37 @@ class Node
   end
   
   def makePlayMinMax(level)
+    $cutnodes = 0
+    $visitedstates = 0
     @value = Node.minMax(self, level, -99999, 99999, Node::MAXPLAYER)
-    puts "Valor: #{@value}"
+    puts "Estados visitados: #{$visitedstates}"    
     @childrens.each do |children|
-      puts "Child Valor: #{children.value}"
+      if @value == children.value
+        return Node.new(children.state)        
+      end
     end
+    nil
+  end
+  
+  def makePlay2(level)
+    $cutnodes = 0
+    $visitedstates = 0
+    @value = Node.alphaBeta2(self, level, -99999, 99999, Node::MAXPLAYER)
+    puts "Estados visitados: #{$visitedstates}"
+    puts "Podas: #{$cutnodes}"    
+    @childrens.each do |children|
+      if @value == children.value
+        return Node.new(children.state)        
+      end
+    end
+    nil
+  end
+  
+  def makePlayMinMax2(level)
+    $cutnodes = 0
+    $visitedstates = 0
+    @value = Node.minMax2(self, level, -99999, 99999, Node::MAXPLAYER)
+    puts "Estados visitados: #{$visitedstates}"    
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -159,6 +202,7 @@ class Node
   end
   
   def Node.alphaBeta(node, depth, alpha, beta, player)
+    $visitedstates = $visitedstates + 1
     if depth == 0 || node.isFinalState
       node.value = node.getHeuristicValue
       return node.value 
@@ -168,6 +212,7 @@ class Node
     if player == MAXPLAYER
       node.childrens.each do |children|
         alpha = [alpha, alphaBeta(children, depth - 1, alpha, beta, MINPLAYER)].max
+        ($cutnodes += 1) if (beta <= alpha)
         break if (beta <= alpha)
       end
       node.value = alpha
@@ -175,6 +220,7 @@ class Node
     else
       node.childrens.each do |children|
         beta = [beta, alphaBeta(children, depth - 1, alpha, beta, MAXPLAYER)].min
+        ($cutnodes += 1) if (beta <= alpha)
         break if (beta <= alpha)
       end
       node.value = beta
@@ -183,6 +229,7 @@ class Node
   end
   
   def Node.minMax(node, depth, alpha, beta, player)
+    $visitedstates = $visitedstates + 1
     if depth == 0 || node.isFinalState
       node.value = node.getHeuristicValue
       return node.value 
@@ -191,13 +238,13 @@ class Node
     node.generateChildrens(player)
     if player == MAXPLAYER
       node.childrens.each do |children|
-        alpha = [alpha, alphaBeta(children, depth - 1, alpha, beta, MINPLAYER)].max        
+        alpha = [alpha, minMax(children, depth - 1, alpha, beta, MINPLAYER)].max        
       end
       node.value = alpha
       return alpha
     else
       node.childrens.each do |children|
-        beta = [beta, alphaBeta(children, depth - 1, alpha, beta, MAXPLAYER)].min        
+        beta = [beta, minMax(children, depth - 1, alpha, beta, MAXPLAYER)].min        
       end
       node.value = beta
       return beta
@@ -236,5 +283,55 @@ class Node
       end
     end
     put
+  end
+  
+  def Node.alphaBeta2(node, depth, alpha, beta, player)
+    $visitedstates = $visitedstates + 1
+    if depth == 0 || node.isFinalState
+      node.value = node.getHeuristicValue2
+      return node.value 
+    end
+    
+    node.generateChildrens(player)
+    if player == MAXPLAYER
+      node.childrens.each do |children|
+        alpha = [alpha, alphaBeta2(children, depth - 1, alpha, beta, MINPLAYER)].max
+        ($cutnodes += 1) if (beta <= alpha)
+        break if (beta <= alpha)
+      end
+      node.value = alpha
+      return alpha
+    else
+      node.childrens.each do |children|
+        beta = [beta, alphaBeta2(children, depth - 1, alpha, beta, MAXPLAYER)].min
+        ($cutnodes += 1) if (beta <= alpha)
+        break if (beta <= alpha)
+      end
+      node.value = beta
+      return beta
+    end
+  end
+  
+  def Node.minMax2(node, depth, alpha, beta, player)
+    $visitedstates = $visitedstates + 1
+    if depth == 0 || node.isFinalState
+      node.value = node.getHeuristicValue2
+      return node.value 
+    end
+    
+    node.generateChildrens(player)
+    if player == MAXPLAYER
+      node.childrens.each do |children|
+        alpha = [alpha, minMax2(children, depth - 1, alpha, beta, MINPLAYER)].max        
+      end
+      node.value = alpha
+      return alpha
+    else
+      node.childrens.each do |children|
+        beta = [beta, minMax2(children, depth - 1, alpha, beta, MAXPLAYER)].min        
+      end
+      node.value = beta
+      return beta
+    end
   end
 end
