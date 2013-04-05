@@ -91,7 +91,6 @@ def count_number_of_moves(row, col)
   moves
 end
 
-
 #regers la multiplicacion de mejor numero de movidas
 #por el numero de veces que se repiten
 def best_option_row(row, col)
