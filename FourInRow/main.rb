@@ -1,5 +1,9 @@
 require_relative 'node'
 
+def time_diff(start, finish)
+  (finish - start) * 1000.0
+end
+
 print "Introduce tu nombre: "
 name = gets.delete("\n")
 puts "Bienvenido #{name}!, Quien quieres que empiece a jugar (1 = Yo, 2 = Maquina): "
@@ -32,14 +36,15 @@ if resp == 1
 end
 
 while (!node.isFinalState)
+  tstart = Time.now
   puts "Ahora yo hago mi jugada, espera...."
   if (algo == 1)
     if (heu == 1)
       puts "Usando Minimax, y la heuristica de la clase"
-      node = node.makePlayMinMax2(level - 1)
+      node = node.makePlayMinMax2 level
     else
       puts "Usando Minimax, y la super heuristica"
-      node = node.makePlayMinMax(level - 1)
+      node = node.makePlayMinMax level 
     end
   else
     if (heu == 1)
@@ -50,6 +55,7 @@ while (!node.isFinalState)
       node = node.makePlay level
     end
   end
+  puts("Tiempo que tarde: #{time_diff(tstart, Time.now)}ms.")
   puts "Esta es mi jugada ;)"
   node.show_table
   
