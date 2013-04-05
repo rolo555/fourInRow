@@ -1,3 +1,4 @@
+require_relative 'heuristic'
 
 class Node
   attr :state
@@ -33,7 +34,15 @@ class Node
   end
   
   def getHeuristicValue
-    Random.rand(-5..5)
+    if isDraw
+      return 0
+    elsif minPlayerWon
+      return -10000
+    elsif maxPlayerWon
+      return 10000
+    else
+      return heuristic(@state, MAXPLAYER) - heuristic(@state, MINPLAYER)
+    end
   end
   
   def isDraw
@@ -123,20 +132,27 @@ class Node
   end
   
   def makePlay
-    @value = Node.alphaBeta(self, 4, -99999, 99999, Node::MAXPLAYER)
+    @value = Node.alphaBeta(self, 9, -99999, 99999, Node::MAXPLAYER)
+    @childrens.each do |children|
+      puts "Child Valor: #{children.value}"
+    end
     @childrens.each do |children|
       if @value == children.value
-        return Node.new(children)        
+        return Node.new(children.state)        
       end
     end
     nil
   end
   
   def makePlayMinMax
-    @value = Node.minMax(n, 4, Node::MAXPLAYER)
+    @value = Node.minMax(self, 9, -99999, 99999, Node::MAXPLAYER)
+    puts "Valor: #{@value}"
+    @childrens.each do |children|
+      puts "Child Valor: #{children.value}"
+    end
     @childrens.each do |children|
       if @value == children.value
-        return Node.new(children)        
+        return Node.new(children.state)        
       end
     end
     nil
@@ -166,22 +182,59 @@ class Node
     end
   end
   
-  def Node.minMax(node, depth, player)
+  def Node.minMax(node, depth, alpha, beta, player)
     if depth == 0 || node.isFinalState
       node.value = node.getHeuristicValue
       return node.value 
     end
+    
     node.generateChildrens(player)
-    alpha = -99999999
-    node.childrens.each do |children|
-      alpha = [alpha, -1 * minMax(children, depth - 1, -1 * player)].max
+    if player == MAXPLAYER
+      node.childrens.each do |children|
+        alpha = [alpha, alphaBeta(children, depth - 1, alpha, beta, MINPLAYER)].max        
+      end
+      node.value = alpha
+      return alpha
+    else
+      node.childrens.each do |children|
+        beta = [beta, alphaBeta(children, depth - 1, alpha, beta, MAXPLAYER)].min        
+      end
+      node.value = beta
+      return beta
     end
-    return alpha
+  end
+  
+  def show_table
+    (0...ROWSIZE).each do |row| 
+      (0...COLUMNSIZE).each do |col|
+        val = @state[row][col]
+  
+        case val
+        when 0
+          print "|_"
+        when MAXPLAYER 
+          print "|X"
+        when MINPLAYER
+          print "|O"
+        end
+      end
+      puts '|'
+    end
+  end
+  
+  def putPiece(column, player)
+    put = false
+    if (column < 0 || column >= COLUMNSIZE)
+      return false
+    end
+    
+    (ROWSIZE - 1).downto(0) do |i|
+      if (@state[i][column] == 0)
+        @state[i][column] = player
+        put = true
+        break
+      end
+    end
+    put
   end
 end
-
-n = Node.new
-puts Node.alphaBeta(n, 7, -99999, 99999, Node::MAXPLAYER)
-n = Node.new
-puts Node.minMax(n, 7, Node::MAXPLAYER)
-#n.printTree 0
