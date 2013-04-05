@@ -3,6 +3,8 @@ require_relative 'heuristic2'
 
 $cutnodes = 0
 $visitedstates = 0
+@@maxcut = 0
+@@maxvisited = 0
 
 class Node
   attr :state
@@ -152,7 +154,9 @@ class Node
     $visitedstates = 0
     @value = Node.alphaBeta(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"
-    puts "Podas: #{$cutnodes}"    
+    puts "Podas: #{$cutnodes}"
+    (@@maxcut = $cutnodes) if $cutnodes > @@maxcut
+    (@@maxvisited = $visitedstates) if $visitedstates > @@maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -165,7 +169,9 @@ class Node
     $cutnodes = 0
     $visitedstates = 0
     @value = Node.minMax(self, level, -99999, 99999, Node::MAXPLAYER)
-    puts "Estados visitados: #{$visitedstates}"    
+    puts "Estados visitados: #{$visitedstates}"
+    @@maxcut = $cutnodes if $cutnodes > @@maxcut
+    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -180,6 +186,8 @@ class Node
     @value = Node.alphaBeta2(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"
     puts "Podas: #{$cutnodes}"    
+    @@maxcut = $cutnodes if $cutnodes > @@maxcut
+    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -193,6 +201,8 @@ class Node
     $visitedstates = 0
     @value = Node.minMax2(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"    
+    @@maxcut = $cutnodes if $cutnodes > @@maxcut
+    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -262,11 +272,13 @@ class Node
         when MAXPLAYER 
           print "|X"
         when MINPLAYER
-          print "|O"
+          print "|@"
         end
       end
       puts '|'
     end
+    puts("---------------")
+    puts("|0|1|2|3|4|5|6|")
   end
   
   def putPiece(column, player)
@@ -334,4 +346,9 @@ class Node
       return beta
     end
   end
+end
+
+def printfinal
+  puts("Maxima cantidad de podas: #{@@maxcut}")
+  puts("Maxima cantidad de nodos visitados: #{@@maxvisited}")
 end

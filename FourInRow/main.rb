@@ -4,6 +4,8 @@ def time_diff(start, finish)
   (finish - start) * 1000.0
 end
 
+maxtime = 0
+
 print "Introduce tu nombre: "
 name = gets.delete("\n")
 puts "Bienvenido #{name}!, Quien quieres que empiece a jugar (1 = Yo, 2 = Maquina): "
@@ -55,7 +57,10 @@ while (!node.isFinalState)
       node = node.makePlay level
     end
   end
-  puts("Tiempo que tarde: #{time_diff(tstart, Time.now)}ms.")
+  dtime = time_diff(tstart, Time.now)
+  puts("Tiempo que tarde: #{dtime}ms.")
+  maxtime = dtime if dtime > maxtime
+  
   puts "Esta es mi jugada ;)"
   node.show_table
   
@@ -75,3 +80,6 @@ elsif node.isDraw
 else
   puts "Perdi :( gg"
 end
+
+puts("Maximo tiempo tardado: #{maxtime}")
+printfinal
