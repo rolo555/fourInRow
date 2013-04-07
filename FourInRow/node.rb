@@ -64,12 +64,12 @@ class Node
   end
   
   def isDraw
-    return false if maxPlayerWon || minPlayerWon
     0.upto(ROWSIZE - 1) do |i|
       0.upto(COLUMNSIZE - 1) do |j|
         return false if @state[i][j] == 0
       end
     end
+    return false if maxPlayerWon || minPlayerWon
     true
   end
   
