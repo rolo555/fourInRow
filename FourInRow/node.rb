@@ -3,8 +3,8 @@ require_relative 'heuristic2'
 
 $cutnodes = 0
 $visitedstates = 0
-@@maxcut = 0
-@@maxvisited = 0
+$maxcut = 0
+$maxvisited = 0
 
 class Node
   attr :state
@@ -156,8 +156,8 @@ class Node
     @value = Node.alphaBeta(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"
     puts "Podas: #{$cutnodes}"
-    (@@maxcut = $cutnodes) if $cutnodes > @@maxcut
-    (@@maxvisited = $visitedstates) if $visitedstates > @@maxvisited
+    ($maxcut = $cutnodes) if $cutnodes > $maxcut
+    ($maxvisited = $visitedstates) if $visitedstates > $maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -171,8 +171,8 @@ class Node
     $visitedstates = 0
     @value = Node.minMax(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"
-    @@maxcut = $cutnodes if $cutnodes > @@maxcut
-    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
+    $maxcut = $cutnodes if $cutnodes > $maxcut
+    $maxvisited = $visitedstates if $visitedstates > $maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -187,8 +187,8 @@ class Node
     @value = Node.alphaBeta2(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"
     puts "Podas: #{$cutnodes}"    
-    @@maxcut = $cutnodes if $cutnodes > @@maxcut
-    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
+    $maxcut = $cutnodes if $cutnodes > $maxcut
+    $maxvisited = $visitedstates if $visitedstates > $maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -202,8 +202,8 @@ class Node
     $visitedstates = 0
     @value = Node.minMax2(self, level, -99999, 99999, Node::MAXPLAYER)
     puts "Estados visitados: #{$visitedstates}"    
-    @@maxcut = $cutnodes if $cutnodes > @@maxcut
-    @@maxvisited = $visitedstates if $visitedstates > @@maxvisited
+    $maxcut = $cutnodes if $cutnodes > $maxcut
+    $maxvisited = $visitedstates if $visitedstates > $maxvisited
     @childrens.each do |children|
       if @value == children.value
         return Node.new(children.state)        
@@ -350,6 +350,6 @@ class Node
 end
 
 def printfinal
-  puts("Maxima cantidad de podas: #{@@maxcut}")
-  puts("Maxima cantidad de nodos visitados: #{@@maxvisited}")
+  puts("Maxima cantidad de podas: #{$maxcut}")
+  puts("Maxima cantidad de nodos visitados: #{$maxvisited}")
 end
